@@ -365,6 +365,10 @@ textarea {
   transition: transform 260ms ease;
 }
 
+.section-image-frame.is-dragging img {
+  transition: none;
+}
+
 .section-image-frame.is-draggable {
   cursor: grab;
   touch-action: none;

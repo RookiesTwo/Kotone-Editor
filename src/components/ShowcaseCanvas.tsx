@@ -51,7 +51,7 @@ export function ShowcaseCanvas({
         {section.description ? <p>{section.description}</p> : null}
         {section.image && section.imageDisplayMode === "inline" ? (
           <figure
-            className={`section-image-frame${editableSectionId === section.id ? " is-draggable" : ""}`}
+            className={`section-image-frame${editableSectionId === section.id ? " is-draggable" : ""}${dragState?.id === section.id ? " is-dragging" : ""}`}
             style={{
               width: `${section.imageFrameWidth}%`,
               minHeight: `${section.imageFrameHeight}vh`,

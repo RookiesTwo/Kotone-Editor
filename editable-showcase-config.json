@@ -1,0 +1,112 @@
+{
+  "global": {
+    "siteTitle": "Kotone Editor",
+    "siteSubtitle": "",
+    "accent": "#fae652",
+    "accentSoft": "#ffd36a",
+    "backgroundStart": "#0c0716",
+    "backgroundEnd": "#24113d",
+    "fontPreset": "display",
+    "motionPreset": "medium",
+    "showNav": true,
+    "showFooter": true,
+    "links": [
+      {
+        "label": "Editor",
+        "href": "#/editor"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "hero-01",
+      "type": "hero",
+      "visible": true,
+      "title": "Kotone Editor",
+      "description": "一款完全可自定义的数据驱动纯前端炫酷展示页面编辑器。",
+      "quote": "",
+      "tags": [],
+      "image": {
+        "src": "/assets/Kotone_01.jpeg",
+        "alt": "Hero key visual",
+        "kind": "local"
+      },
+      "secondaryImage": null,
+      "galleryItems": [],
+      "background": "linear-gradient(145deg, #3c7a59 0%, #231033 100%)",
+      "backgroundAccent": "#fae652",
+      "overlayOpacity": 0.17,
+      "align": "start",
+      "density": "full",
+      "buttonLabel": "立刻尝试",
+      "buttonHref": "#/editor",
+      "transitionStyle": "glow",
+      "imageDisplayMode": "background",
+      "imageFrameWidth": 100,
+      "imageFrameHeight": 100,
+      "imageScale": 1.05,
+      "imageOffsetX": 0,
+      "imageOffsetY": 0
+    },
+    {
+      "id": "profile-01",
+      "type": "hero",
+      "visible": true,
+      "title": "样式全自定义",
+      "description": "支持多种模板，且有完全可自定义的图片卡片样式。下方的图片可以拖动调整裁切位置。",
+      "quote": "",
+      "tags": [],
+      "image": {
+        "src": "/assets/Kotone_02.jpeg",
+        "alt": "Profile visual",
+        "kind": "local"
+      },
+      "secondaryImage": null,
+      "galleryItems": [],
+      "background": "linear-gradient(45deg,#3c7a59 0%, #fcf38d 100%)",
+      "backgroundAccent": "#ffd36a",
+      "overlayOpacity": 0.28,
+      "align": "center",
+      "density": "tall",
+      "buttonLabel": "",
+      "buttonHref": "",
+      "transitionStyle": "lift",
+      "imageDisplayMode": "inline",
+      "imageFrameWidth": 100,
+      "imageFrameHeight": 24,
+      "imageScale": 1.7,
+      "imageOffsetX": -2.86964781200062,
+      "imageOffsetY": 12.61160344153406
+    },
+    {
+      "id": "section-659f840e-7259-446c-8752-a89db88e8b06",
+      "type": "hero",
+      "visible": true,
+      "title": "完全开源",
+      "description": "点击下方按钮查看源码仓库",
+      "quote": "",
+      "tags": [],
+      "image": null,
+      "secondaryImage": null,
+      "galleryItems": [],
+      "background": "linear-gradient(45deg,#3c7a59 0%, #fcf38d 100%)",
+      "backgroundAccent": "#fcf38d ",
+      "overlayOpacity": 0.03,
+      "align": "center",
+      "density": "full",
+      "buttonLabel": "前往仓库",
+      "buttonHref": "https://github.com/RookiesTwo/Kotone-Editor",
+      "transitionStyle": "fade",
+      "imageDisplayMode": "background",
+      "imageFrameWidth": 46,
+      "imageFrameHeight": 72,
+      "imageScale": 1,
+      "imageOffsetX": 0,
+      "imageOffsetY": 0
+    }
+  ]
+}

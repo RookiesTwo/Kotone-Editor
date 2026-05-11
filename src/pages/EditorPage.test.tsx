@@ -16,13 +16,13 @@ describe("EditorPage localization", () => {
 
     expect(screen.getByText("编辑器")).toBeInTheDocument();
     expect(screen.getByText("站点标题")).toBeInTheDocument();
-    expect(screen.getAllByText("Neon Reverie").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kotone Editor").length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "EN" }));
 
     expect(screen.getAllByText("Editor").length).toBeGreaterThan(0);
     expect(screen.getByText("Site title")).toBeInTheDocument();
-    expect(screen.getAllByText("Neon Reverie").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kotone Editor").length).toBeGreaterThan(0);
   });
 
   it("lets the user add and remove tags", () => {
