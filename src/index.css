@@ -330,6 +330,13 @@ textarea {
   transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease;
 }
 
+.showcase-shell-bg-to {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .showcase-active-background--page {
   position: fixed;
   inset: 0;

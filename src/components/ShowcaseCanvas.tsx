@@ -135,6 +135,14 @@ export function ShowcaseCanvas({
       }}
     >
       <div
+        className="showcase-shell-bg-to"
+        aria-hidden="true"
+        style={{
+          background: toSection.background,
+          opacity: fromSection.id === toSection.id ? 0 : progress,
+        }}
+      />
+      <div
         className="showcase-backdrop"
         aria-hidden="true"
         style={{
