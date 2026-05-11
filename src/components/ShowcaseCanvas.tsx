@@ -15,10 +15,7 @@ export function ShowcaseCanvas({
 }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const visibleSections = config.sections.filter((section) => section.visible);
-  const activeId = useActiveSection(
-    visibleSections.map((section) => section.id),
-    embedded ? undefined : scrollerRef,
-  );
+  const activeId = useActiveSection(visibleSections.map((section) => section.id));
 
   const activeSection = visibleSections.find((section) => section.id === activeId) ?? visibleSections[0];
 
