@@ -338,7 +338,10 @@ textarea {
 
 .showcase-active-background--embedded {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
   z-index: 0;
 }
 
