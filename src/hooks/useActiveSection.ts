@@ -46,15 +46,18 @@ export function useActiveSection(
 
     const computeState = () => {
       const viewportCenter = window.innerHeight / 2;
-      const rects: SectionRect[] = nodes.map((node) => {
+      const rects: SectionRect[] = nodes.map((node, i) => {
         const rect = node.getBoundingClientRect();
         const centerY = rect.top + rect.height / 2;
+        const isFirst = i === 0;
+        const isLast = i === nodes.length - 1;
+
         return {
           id: node.dataset.sectionId ?? "",
           top: rect.top,
           bottom: rect.bottom,
-          zoneTop: centerY - rect.height * ZONE_PADDING,
-          zoneBottom: centerY + rect.height * ZONE_PADDING,
+          zoneTop: isFirst ? rect.top : centerY - rect.height * ZONE_PADDING,
+          zoneBottom: isLast ? Number.POSITIVE_INFINITY : centerY + rect.height * ZONE_PADDING,
         };
       });
 
