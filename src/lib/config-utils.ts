@@ -114,14 +114,16 @@ export function createSection(type: SectionType = "custom"): SectionConfig {
 }
 
 function normalizeSection(value: unknown): SectionConfig {
-  const fallback = createSection("custom");
   if (!isRecord(value)) {
-    return fallback;
+    return createSection("custom");
   }
+
+  const type = pickEnum(value.type, sectionTypes, "custom");
+  const fallback = createSection(type);
 
   return {
     id: pickString(value.id, fallback.id),
-    type: pickEnum(value.type, sectionTypes, "custom"),
+    type,
     visible: pickBoolean(value.visible, true),
     title: pickString(value.title, fallback.title),
     description: pickString(value.description, fallback.description),

@@ -50,6 +50,14 @@ describe("config-utils", () => {
     expect(section.imageOffsetY).toBe(0);
   });
 
+  it("defaults hero imageDisplayMode to background when the field is missing", () => {
+    const config = normalizeSiteConfig({
+      sections: [{ id: "hero-old", type: "hero" }],
+    });
+
+    expect(config.sections[0].imageDisplayMode).toBe("background");
+  });
+
   it("normalizes missing or invalid image composition values", () => {
     const config = normalizeSiteConfig({
       sections: [
