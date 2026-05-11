@@ -97,7 +97,7 @@ textarea {
     linear-gradient(180deg, rgba(255, 255, 255, calc(var(--overlay-opacity) * 0.16)) 0%, transparent 38%);
   mix-blend-mode: screen;
   opacity: 0.95;
-  transition: opacity 600ms ease, transform 600ms ease;
+  transition: transform 600ms ease;
 }
 
 .showcase-shell--embedded .showcase-backdrop {
