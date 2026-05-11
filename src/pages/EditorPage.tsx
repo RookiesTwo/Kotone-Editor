@@ -25,7 +25,45 @@ export function EditorPage() {
 
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const [newSectionType, setNewSectionType] = useState<SectionType>("hero");
+  const [newTag, setNewTag] = useState("");
   const selectedSection = config.sections.find((section) => section.id === selectedSectionId) ?? config.sections[0];
+
+  function addTag() {
+    if (!selectedSection || !newTag.trim()) {
+      return;
+    }
+
+    updateSection(selectedSection.id, {
+      tags: [...selectedSection.tags, newTag.trim()],
+    });
+    setNewTag("");
+  }
+
+  function removeTag(tag: string) {
+    if (!selectedSection) {
+      return;
+    }
+
+    updateSection(selectedSection.id, {
+      tags: selectedSection.tags.filter((item) => item !== tag),
+    });
+  }
+
+  function moveTag(index: number, direction: -1 | 1) {
+    if (!selectedSection) {
+      return;
+    }
+
+    const target = index + direction;
+    if (target < 0 || target >= selectedSection.tags.length) {
+      return;
+    }
+
+    const nextTags = [...selectedSection.tags];
+    const [moved] = nextTags.splice(index, 1);
+    nextTags.splice(target, 0, moved);
+    updateSection(selectedSection.id, { tags: nextTags });
+  }
 
   async function handleImport(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -191,6 +229,50 @@ export function EditorPage() {
               <input value={selectedSection.backgroundAccent} onChange={(event) => updateSection(selectedSection.id, { backgroundAccent: event.target.value })} />
             </label>
             <label>
+              <span>Image frame width</span>
+              <input
+                type="range"
+                min="24"
+                max="100"
+                value={selectedSection.imageFrameWidth}
+                onChange={(event) => updateSection(selectedSection.id, { imageFrameWidth: Number(event.target.value) })}
+              />
+            </label>
+            <label>
+              <span>Image frame height</span>
+              <input
+                type="range"
+                min="24"
+                max="100"
+                value={selectedSection.imageFrameHeight}
+                onChange={(event) => updateSection(selectedSection.id, { imageFrameHeight: Number(event.target.value) })}
+              />
+            </label>
+            <label>
+              <span>Image scale</span>
+              <input
+                type="range"
+                min="0.5"
+                max="2.5"
+                step="0.05"
+                value={selectedSection.imageScale}
+                onChange={(event) => updateSection(selectedSection.id, { imageScale: Number(event.target.value) })}
+              />
+            </label>
+            {selectedSection.type === "hero" ? (
+              <label>
+                <span>Overlay opacity</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="0.75"
+                  step="0.01"
+                  value={selectedSection.overlayOpacity}
+                  onChange={(event) => updateSection(selectedSection.id, { overlayOpacity: Number(event.target.value) })}
+                />
+              </label>
+            ) : null}
+            <label>
               <span>{messages.selectedSection.buttonLabel}</span>
               <input value={selectedSection.buttonLabel} onChange={(event) => updateSection(selectedSection.id, { buttonLabel: event.target.value })} />
             </label>
@@ -198,6 +280,33 @@ export function EditorPage() {
               <span>{messages.selectedSection.buttonHref}</span>
               <input value={selectedSection.buttonHref} onChange={(event) => updateSection(selectedSection.id, { buttonHref: event.target.value })} />
             </label>
+            <div className="editor-panel editor-panel--tags">
+              <h3>Tags</h3>
+              <div className="editor-inline-actions">
+                <input value={newTag} onChange={(event) => setNewTag(event.target.value)} placeholder="Add tag" />
+                <button type="button" onClick={addTag}>
+                  Add tag
+                </button>
+              </div>
+              <ul className="editor-tag-list">
+                {selectedSection.tags.map((tag, index) => (
+                  <li key={`${tag}-${index}`}>
+                    <span>{tag}</span>
+                    <div className="editor-inline-actions">
+                      <button type="button" onClick={() => moveTag(index, -1)} disabled={index === 0}>
+                        Up
+                      </button>
+                      <button type="button" onClick={() => moveTag(index, 1)} disabled={index === selectedSection.tags.length - 1}>
+                        Down
+                      </button>
+                      <button type="button" onClick={() => removeTag(tag)}>
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         ) : null}
 
