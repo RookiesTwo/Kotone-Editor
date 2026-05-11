@@ -262,7 +262,6 @@ textarea {
   align-self: start;
   max-height: calc(100vh - 2.5rem);
   overflow-y: auto;
-  z-index: 1;
 }
 
 .editor-panel {
@@ -331,10 +330,18 @@ textarea {
   transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease;
 }
 
-.showcase-active-background--page,
-.showcase-active-background--embedded {
+.showcase-active-background--page {
   position: fixed;
   inset: 0;
+  z-index: 0;
+}
+
+.showcase-active-background--embedded {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 420px;
   z-index: 0;
 }
 
@@ -398,5 +405,9 @@ textarea {
 
   .gallery-grid {
     grid-template-columns: 1fr;
+  }
+
+  .showcase-active-background--embedded {
+    left: 0;
   }
 }
