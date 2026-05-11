@@ -1,4 +1,5 @@
-import { createHashRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
 import { SiteConfigProvider } from "./context/SiteConfigContext";
 import { EditorPage } from "./pages/EditorPage";
 import { ShowcasePage } from "./pages/ShowcasePage";
