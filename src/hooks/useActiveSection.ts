@@ -2,10 +2,18 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 
 const ZONE_PADDING = 0.15;
 
+type TransitionMode = "zone" | "gap";
+
+interface PhaseState {
+  mode: TransitionMode;
+  current: string;
+  from: string;
+  to: string;
+  progress: number;
+}
+
 interface SectionRect {
   id: string;
-  top: number;
-  bottom: number;
   zoneTop: number;
   zoneBottom: number;
 }
@@ -14,17 +22,15 @@ export function useActiveSection(
   sectionIds: string[],
   rootRef?: RefObject<HTMLElement | null>,
 ) {
-  const [state, setState] = useState<{
-    from: string;
-    to: string;
-    progress: number;
-  }>(() => {
-    if (sectionIds.length === 0) {
-      return { from: "", to: "", progress: 0 };
-    }
-
-    const first = sectionIds[0];
-    return { from: first, to: first, progress: 0 };
+  const [state, setState] = useState<PhaseState>(() => {
+    const first = sectionIds[0] ?? "";
+    return {
+      mode: "zone",
+      current: first,
+      from: first,
+      to: first,
+      progress: 0,
+    };
   });
 
   const stateRef = useRef(state);
@@ -32,48 +38,54 @@ export function useActiveSection(
 
   useEffect(() => {
     if (sectionIds.length === 0) {
-      setState({ from: "", to: "", progress: 0 });
+      setState({ mode: "zone", current: "", from: "", to: "", progress: 0 });
       return;
     }
 
     const root = rootRef?.current ?? null;
-    const nodes = Array.from(
-      (root ?? document).querySelectorAll<HTMLElement>("[data-section-id]"),
-    );
+    const nodes = Array.from((root ?? document).querySelectorAll<HTMLElement>("[data-section-id]"));
     if (nodes.length === 0) {
       return;
     }
 
     const computeState = () => {
       const viewportCenter = window.innerHeight / 2;
-      const rects: SectionRect[] = nodes.map((node, i) => {
+      const rects: SectionRect[] = nodes.map((node, index) => {
         const rect = node.getBoundingClientRect();
         const centerY = rect.top + rect.height / 2;
-        const isFirst = i === 0;
-        const isLast = i === nodes.length - 1;
+        const isFirst = index === 0;
+        const isLast = index === nodes.length - 1;
 
         return {
-          id: node.dataset.sectionId ?? "",
-          top: rect.top,
-          bottom: rect.bottom,
+          id: node.dataset.sectionId ?? sectionIds[0],
           zoneTop: isFirst ? rect.top : centerY - rect.height * ZONE_PADDING,
           zoneBottom: isLast ? Number.POSITIVE_INFINITY : centerY + rect.height * ZONE_PADDING,
         };
       });
 
-      // Find which visual-center zone contains the viewport center
       for (const rect of rects) {
         if (viewportCenter >= rect.zoneTop && viewportCenter <= rect.zoneBottom) {
-          if (stateRef.current.from !== rect.id || stateRef.current.to !== rect.id || stateRef.current.progress !== 0) {
-            setState({ from: rect.id, to: rect.id, progress: 0 });
-          }
+          const next: PhaseState = {
+            mode: "zone",
+            current: rect.id,
+            from: rect.id,
+            to: rect.id,
+            progress: 0,
+          };
 
+          setState((prev) =>
+            prev.mode === next.mode &&
+            prev.current === next.current &&
+            prev.from === next.from &&
+            prev.to === next.to &&
+            prev.progress === next.progress
+              ? prev
+              : next,
+          );
           return;
         }
       }
 
-      // Find the gap: first section whose zoneTop is below viewport center (upper/entering),
-      // and the section immediately before it (lower/exiting)
       let upper: SectionRect | null = null;
       let lower: SectionRect | null = null;
 
@@ -89,23 +101,47 @@ export function useActiveSection(
         const gapStart = lower.zoneBottom;
         const gapEnd = upper.zoneTop;
         const gapLength = gapEnd - gapStart;
-        const gapProgress = gapLength > 0
-          ? (viewportCenter - gapStart) / gapLength
-          : 0;
-        const clamped = Math.max(0, Math.min(1, gapProgress));
+        const progress = gapLength > 0 ? (viewportCenter - gapStart) / gapLength : 0;
+        const clamped = Math.max(0, Math.min(1, progress));
 
-        if (stateRef.current.from !== lower.id || stateRef.current.to !== upper.id || stateRef.current.progress !== clamped) {
-          setState({ from: lower.id, to: upper.id, progress: clamped });
-        }
+        const next: PhaseState = {
+          mode: "gap",
+          current: upper.id,
+          from: lower.id,
+          to: upper.id,
+          progress: clamped,
+        };
 
+        setState((prev) =>
+          prev.mode === next.mode &&
+          prev.current === next.current &&
+          prev.from === next.from &&
+          prev.to === next.to &&
+          prev.progress === next.progress
+            ? prev
+            : next,
+        );
         return;
       }
 
-      // Before first section's zone or after last section's zone
-      const firstId = rects[0]?.id ?? sectionIds[0];
-      if (stateRef.current.from !== firstId || stateRef.current.to !== firstId || stateRef.current.progress !== 0) {
-        setState({ from: firstId, to: firstId, progress: 0 });
-      }
+      const last = rects.at(-1)?.id ?? sectionIds[0];
+      const next: PhaseState = {
+        mode: "zone",
+        current: last,
+        from: last,
+        to: last,
+        progress: 0,
+      };
+
+      setState((prev) =>
+        prev.mode === next.mode &&
+        prev.current === next.current &&
+        prev.from === next.from &&
+        prev.to === next.to &&
+        prev.progress === next.progress
+          ? prev
+          : next,
+      );
     };
 
     computeState();
