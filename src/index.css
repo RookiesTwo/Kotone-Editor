@@ -330,6 +330,66 @@ textarea {
   padding: 1.25rem;
 }
 
+.showcase-active-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.88;
+  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease, opacity 700ms ease;
+}
+
+.section-image-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.section-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 260ms ease;
+}
+
+.section-image-frame.is-draggable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.section-image-frame.is-draggable:active {
+  cursor: grabbing;
+}
+
+.editor-panel--tags {
+  margin-top: 0.5rem;
+}
+
+.editor-panel--tags h3 {
+  margin: 0;
+}
+
+.editor-tag-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.editor-tag-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
 @media (max-width: 980px) {
   .editor-layout {
     grid-template-columns: 1fr;
