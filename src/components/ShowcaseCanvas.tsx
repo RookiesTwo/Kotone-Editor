@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useActiveSection } from "../hooks/useActiveSection";
+import { resolveAssetSrc } from "../lib/asset-url";
 import type { SectionConfig, SiteConfig } from "../types/site-config";
 
 export function ShowcaseCanvas({
@@ -39,7 +40,7 @@ export function ShowcaseCanvas({
         <div className="gallery-grid">
           {section.galleryItems.map((item) => (
             <article key={item.src} className="gallery-card">
-              <img src={item.src} alt={item.alt} />
+              <img src={resolveAssetSrc(item.src)} alt={item.alt} />
             </article>
           ))}
         </div>
@@ -87,7 +88,7 @@ export function ShowcaseCanvas({
             onPointerCancel={() => setDragState(null)}
           >
             <img
-              src={section.image.src}
+              src={resolveAssetSrc(section.image.src)}
               alt={section.image.alt}
               style={{
                 transform: `translate(${section.imageOffsetX}%, ${section.imageOffsetY}%) scale(${section.imageScale})`,
@@ -112,8 +113,10 @@ export function ShowcaseCanvas({
       return {};
     }
 
+    const imageSrc = resolveAssetSrc(section.image.src);
+
     return {
-      backgroundImage: `linear-gradient(120deg, rgba(7, 5, 14, ${section.overlayOpacity + 0.18}) 0%, rgba(7, 5, 14, ${section.overlayOpacity + 0.34}) 50%, rgba(7, 5, 14, ${section.overlayOpacity + 0.5}) 100%), url(${section.image.src})`,
+      backgroundImage: `linear-gradient(120deg, rgba(7, 5, 14, ${section.overlayOpacity + 0.18}) 0%, rgba(7, 5, 14, ${section.overlayOpacity + 0.34}) 50%, rgba(7, 5, 14, ${section.overlayOpacity + 0.5}) 100%), url(${imageSrc})`,
       backgroundPosition: `${50 + section.imageOffsetX * 0.2}% ${50 + section.imageOffsetY * 0.2}%`,
       backgroundSize: `${section.imageScale * 100}%`,
     };
