@@ -152,6 +152,7 @@ textarea {
   max-width: 760px;
   display: grid;
   gap: 1.2rem;
+  transition: opacity 600ms ease, transform 600ms ease;
 }
 
 .showcase-section h2 {
