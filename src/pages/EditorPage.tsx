@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { ShowcaseCanvas } from "../components/ShowcaseCanvas";
+import { useEditorLocale } from "../context/EditorLocaleContext";
 import { useSiteConfig } from "../context/SiteConfigContext";
 import { parseImportedConfig, serializeConfig } from "../lib/persistence";
 import type { SectionType } from "../types/site-config";
@@ -20,6 +21,8 @@ export function EditorPage() {
     resetConfig,
   } = useSiteConfig();
 
+  const { locale, setLocale, messages } = useEditorLocale();
+
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const [newSectionType, setNewSectionType] = useState<SectionType>("hero");
   const selectedSection = config.sections.find((section) => section.id === selectedSectionId) ?? config.sections[0];
@@ -34,7 +37,7 @@ export function EditorPage() {
       const text = await file.text();
       replaceConfig(parseImportedConfig(text));
     } catch {
-      window.alert("Import failed. Please choose a valid JSON config file.");
+      window.alert(messages.alerts.importFailed);
     } finally {
       event.target.value = "";
     }
@@ -54,33 +57,43 @@ export function EditorPage() {
     <main className="editor-layout">
       <aside className="editor-sidebar">
         <section className="editor-panel">
-          <h1>Editor</h1>
-          <p>Adjust the showcase and watch the preview update in real time.</p>
+          <div className="editor-panel__row">
+            <h1>{messages.header.title}</h1>
+            <div className="editor-inline-actions">
+              <button type="button" onClick={() => setLocale("zh-CN")} aria-pressed={locale === "zh-CN"}>
+                {messages.header.switchToChinese}
+              </button>
+              <button type="button" onClick={() => setLocale("en")} aria-pressed={locale === "en"}>
+                {messages.header.switchToEnglish}
+              </button>
+            </div>
+          </div>
+          <p>{messages.header.description}</p>
         </section>
 
         <section className="editor-panel">
-          <h2>Global</h2>
+          <h2>{messages.global.title}</h2>
           <label>
-            <span>Site title</span>
+            <span>{messages.global.siteTitle}</span>
             <input value={config.global.siteTitle} onChange={(event) => updateGlobal({ siteTitle: event.target.value })} />
           </label>
           <label>
-            <span>Subtitle</span>
+            <span>{messages.global.subtitle}</span>
             <textarea value={config.global.siteSubtitle} onChange={(event) => updateGlobal({ siteSubtitle: event.target.value })} />
           </label>
           <label>
-            <span>Accent</span>
+            <span>{messages.global.accent}</span>
             <input value={config.global.accent} onChange={(event) => updateGlobal({ accent: event.target.value })} />
           </label>
           <label>
-            <span>Accent soft</span>
+            <span>{messages.global.accentSoft}</span>
             <input value={config.global.accentSoft} onChange={(event) => updateGlobal({ accentSoft: event.target.value })} />
           </label>
         </section>
 
         <section className="editor-panel">
           <div className="editor-panel__row">
-            <h2>Sections</h2>
+            <h2>{messages.sections.title}</h2>
             <select value={newSectionType} onChange={(event) => setNewSectionType(event.target.value as SectionType)}>
               {sectionTypes.map((type) => (
                 <option key={type} value={type}>
@@ -89,7 +102,7 @@ export function EditorPage() {
               ))}
             </select>
             <button type="button" onClick={() => addSection(newSectionType)}>
-              Add section
+              {messages.sections.addSection}
             </button>
           </div>
 
@@ -97,18 +110,18 @@ export function EditorPage() {
             {config.sections.map((section, index) => (
               <li key={section.id} className={section.id === selectedSection?.id ? "is-selected" : ""}>
                 <button type="button" onClick={() => setSelectedSectionId(section.id)}>
-                  <strong>{section.title || "Untitled section"}</strong>
+                  <strong>{section.title || messages.sections.untitledSection}</strong>
                   <span>{section.type}</span>
                 </button>
                 <div className="editor-inline-actions">
                   <button type="button" onClick={() => moveSection(section.id, -1)} disabled={index === 0}>
-                    Up
+                    {messages.sections.up}
                   </button>
                   <button type="button" onClick={() => moveSection(section.id, 1)} disabled={index === config.sections.length - 1}>
-                    Down
+                    {messages.sections.down}
                   </button>
                   <button type="button" onClick={() => deleteSection(section.id)} disabled={config.sections.length === 1}>
-                    Delete
+                    {messages.sections.delete}
                   </button>
                 </div>
               </li>
@@ -118,9 +131,9 @@ export function EditorPage() {
 
         {selectedSection ? (
           <section className="editor-panel">
-            <h2>Selected section</h2>
+            <h2>{messages.selectedSection.title}</h2>
             <label>
-              <span>Type</span>
+              <span>{messages.selectedSection.type}</span>
               <select value={selectedSection.type} onChange={(event) => updateSection(selectedSection.id, { type: event.target.value as SectionType })}>
                 {sectionTypes.map((type) => (
                   <option key={type} value={type}>
@@ -130,7 +143,7 @@ export function EditorPage() {
               </select>
             </label>
             <label>
-              <span>Visible</span>
+              <span>{messages.selectedSection.visible}</span>
               <input
                 type="checkbox"
                 checked={selectedSection.visible}
@@ -138,22 +151,22 @@ export function EditorPage() {
               />
             </label>
             <label>
-              <span>Title</span>
+              <span>{messages.selectedSection.titleField}</span>
               <input value={selectedSection.title} onChange={(event) => updateSection(selectedSection.id, { title: event.target.value })} />
             </label>
             <label>
-              <span>Description</span>
+              <span>{messages.selectedSection.description}</span>
               <textarea
                 value={selectedSection.description}
                 onChange={(event) => updateSection(selectedSection.id, { description: event.target.value })}
               />
             </label>
             <label>
-              <span>Quote</span>
+              <span>{messages.selectedSection.quote}</span>
               <textarea value={selectedSection.quote} onChange={(event) => updateSection(selectedSection.id, { quote: event.target.value })} />
             </label>
             <label>
-              <span>Image src</span>
+              <span>{messages.selectedSection.imageSrc}</span>
               <input
                 value={selectedSection.image?.src ?? ""}
                 onChange={(event) =>
@@ -170,35 +183,35 @@ export function EditorPage() {
               />
             </label>
             <label>
-              <span>Background</span>
+              <span>{messages.selectedSection.background}</span>
               <input value={selectedSection.background} onChange={(event) => updateSection(selectedSection.id, { background: event.target.value })} />
             </label>
             <label>
-              <span>Accent</span>
+              <span>{messages.selectedSection.accent}</span>
               <input value={selectedSection.backgroundAccent} onChange={(event) => updateSection(selectedSection.id, { backgroundAccent: event.target.value })} />
             </label>
             <label>
-              <span>Button label</span>
+              <span>{messages.selectedSection.buttonLabel}</span>
               <input value={selectedSection.buttonLabel} onChange={(event) => updateSection(selectedSection.id, { buttonLabel: event.target.value })} />
             </label>
             <label>
-              <span>Button href</span>
+              <span>{messages.selectedSection.buttonHref}</span>
               <input value={selectedSection.buttonHref} onChange={(event) => updateSection(selectedSection.id, { buttonHref: event.target.value })} />
             </label>
           </section>
         ) : null}
 
         <section className="editor-panel">
-          <h2>Data</h2>
+          <h2>{messages.data.title}</h2>
           <div className="editor-inline-actions">
             <button type="button" onClick={handleExport}>
-              Export JSON
+              {messages.data.exportJson}
             </button>
             <button type="button" onClick={() => importInputRef.current?.click()}>
-              Import JSON
+              {messages.data.importJson}
             </button>
             <button type="button" onClick={resetConfig}>
-              Reset Demo
+              {messages.data.resetDemo}
             </button>
           </div>
           <input ref={importInputRef} type="file" accept="application/json" hidden onChange={handleImport} />
