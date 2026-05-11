@@ -166,7 +166,7 @@ export function ShowcaseCanvas({
         key={from}
         style={{
           ...fromBg,
-          opacity: fromSection.id === toSection.id ? 0.88 : 1 - progress,
+          opacity: fromSection.id === toSection.id ? 1 : 1 - progress,
         }}
       />
       <div
