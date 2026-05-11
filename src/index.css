@@ -152,15 +152,6 @@ textarea {
   max-width: 760px;
   display: grid;
   gap: 1.2rem;
-  transform: translateY(30px) scale(0.98);
-  opacity: 0.38;
-  transition: transform 600ms ease, opacity 600ms ease, filter 600ms ease;
-}
-
-.showcase-section.is-active .showcase-section__meta {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  filter: drop-shadow(0 18px 48px rgba(0, 0, 0, 0.25));
 }
 
 .showcase-section h2 {

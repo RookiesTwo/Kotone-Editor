@@ -58,14 +58,23 @@ export function useActiveSection(
         }
       }
 
-      setState({ from: bestFrom, to: bestTo, progress: Math.max(0, Math.min(1, bestProgress)) });
+      setState((prev) => {
+        const nextProgress = Math.max(0, Math.min(1, bestProgress));
+        if (prev.from === bestFrom && prev.to === bestTo && prev.progress === nextProgress) {
+          return prev;
+        }
+
+        return { from: bestFrom, to: bestTo, progress: nextProgress };
+      });
     };
 
     updateProgress();
 
-    const onScroll = () => requestAnimationFrame(updateProgress);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    if (typeof requestAnimationFrame === "function" && window.innerHeight > 0) {
+      const onScroll = () => requestAnimationFrame(updateProgress);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
   }, [rootRef, sectionIds]);
 
   return state;

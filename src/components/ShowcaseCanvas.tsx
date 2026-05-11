@@ -15,9 +15,10 @@ export function ShowcaseCanvas({
 }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const visibleSections = config.sections.filter((section) => section.visible);
-  const activeId = useActiveSection(visibleSections.map((section) => section.id));
-
-  const activeSection = visibleSections.find((section) => section.id === activeId) ?? visibleSections[0];
+  const { from, to, progress } = useActiveSection(visibleSections.map((s) => s.id));
+  const fromSection = visibleSections.find((s) => s.id === from) ?? visibleSections[0];
+  const toSection = visibleSections.find((s) => s.id === to) ?? visibleSections[0];
+  const activeSection = fromSection;
 
   const [dragState, setDragState] = useState<{
     id: string;
@@ -97,6 +98,21 @@ export function ShowcaseCanvas({
     );
   }
 
+  function backgroundFor(section: SectionConfig) {
+    if (section.imageDisplayMode !== "background" || !section.image) {
+      return {};
+    }
+
+    return {
+      backgroundImage: `linear-gradient(120deg, rgba(7, 5, 14, ${section.overlayOpacity + 0.18}) 0%, rgba(7, 5, 14, ${section.overlayOpacity + 0.34}) 50%, rgba(7, 5, 14, ${section.overlayOpacity + 0.5}) 100%), url(${section.image.src})`,
+      backgroundPosition: `${50 + section.imageOffsetX * 0.2}% ${50 + section.imageOffsetY * 0.2}%`,
+      backgroundSize: `${section.imageScale * 100}%`,
+    };
+  }
+
+  const fromBg = backgroundFor(fromSection);
+  const toBg = backgroundFor(toSection);
+
   return (
     <div
       ref={scrollerRef}
@@ -115,18 +131,18 @@ export function ShowcaseCanvas({
           embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
         }`}
         style={{
-          backgroundImage:
-            activeSection?.imageDisplayMode === "background" && activeSection.image
-              ? `linear-gradient(120deg, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.18}) 0%, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.34}) 50%, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.5}) 100%), url(${activeSection.image.src})`
-              : undefined,
-          backgroundPosition:
-            activeSection?.imageDisplayMode === "background"
-              ? `${50 + activeSection.imageOffsetX * 0.2}% ${50 + activeSection.imageOffsetY * 0.2}%`
-              : undefined,
-          backgroundSize:
-            activeSection?.imageDisplayMode === "background"
-              ? `${activeSection.imageScale * 100}%`
-              : undefined,
+          ...fromBg,
+          opacity: fromSection.id === toSection.id ? 0.88 : 1 - progress,
+        }}
+      />
+      <div
+        data-testid="showcase-active-background-to"
+        className={`showcase-active-background ${
+          embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
+        }`}
+        style={{
+          ...toBg,
+          opacity: fromSection.id === toSection.id ? 0 : Math.max(0, Math.min(1, progress)),
         }}
       />
 
@@ -145,18 +161,35 @@ export function ShowcaseCanvas({
 
       <div className="showcase-sections">
         {visibleSections.map((section) => {
-          const isActive = section.id === activeSection?.id;
+          const isTransitioningIn = to === section.id && from !== section.id;
+          const isTransitioningOut = from === section.id && to !== section.id;
+          const isSingle = from === to && from === section.id;
+
+          const sectionProgress = isSingle
+            ? 1
+            : isTransitioningIn
+              ? progress
+              : isTransitioningOut
+                ? 1 - progress
+                : 1;
+
+          const sectionTranslateY = (1 - sectionProgress) * 24;
+          const sectionScale = 0.94 + sectionProgress * 0.06;
+          const sectionOpacity = 0.38 + sectionProgress * 0.62;
+
+          const sectionStyle = {
+            opacity: sectionOpacity,
+            transform: `translateY(${sectionTranslateY}px) scale(${sectionScale})`,
+          };
 
           return (
             <section
               key={section.id}
               data-section-id={section.id}
-              className={`showcase-section showcase-section--${section.align} showcase-section--${section.density} ${
-                isActive ? "is-active" : "is-idle"
-              } showcase-section--${section.transitionStyle}`}
+              className={`showcase-section showcase-section--${section.align} showcase-section--${section.density} showcase-section--${section.transitionStyle}`}
             >
               <div className="showcase-section__inner">
-                <div className="showcase-section__meta">
+                <div className="showcase-section__meta" style={sectionStyle}>
                   {section.tags.length > 0 ? (
                     <ul className="tag-row">
                       {section.tags.map((tag) => (
