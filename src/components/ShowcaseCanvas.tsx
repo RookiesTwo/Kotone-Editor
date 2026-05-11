@@ -22,9 +22,21 @@ function renderSectionBody(section: SectionConfig) {
   return (
     <div className="section-copy">
       {section.description ? <p>{section.description}</p> : null}
-      {section.image ? (
-        <figure className="section-image-frame">
-          <img src={section.image.src} alt={section.image.alt} />
+      {section.image && section.imageDisplayMode === "inline" ? (
+        <figure
+          className="section-image-frame"
+          style={{
+            width: `${section.imageFrameWidth}%`,
+            minHeight: `${section.imageFrameHeight}vh`,
+          }}
+        >
+          <img
+            src={section.image.src}
+            alt={section.image.alt}
+            style={{
+              transform: `translate(${section.imageOffsetX}%, ${section.imageOffsetY}%) scale(${section.imageScale})`,
+            }}
+          />
         </figure>
       ) : null}
     </div>
@@ -52,6 +64,24 @@ export function ShowcaseCanvas({ config, embedded = false }: { config: SiteConfi
         ["--overlay-opacity" as string]: String(activeSection?.overlayOpacity ?? 0.24),
       }}
     >
+      <div
+        data-testid="showcase-active-background"
+        className="showcase-active-background"
+        style={{
+          backgroundImage:
+            activeSection?.imageDisplayMode === "background" && activeSection.image
+              ? `linear-gradient(120deg, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.18}) 0%, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.34}) 50%, rgba(7, 5, 14, ${activeSection.overlayOpacity + 0.5}) 100%), url(${activeSection.image.src})`
+              : undefined,
+          backgroundPosition:
+            activeSection?.imageDisplayMode === "background"
+              ? `${50 + activeSection.imageOffsetX * 0.2}% ${50 + activeSection.imageOffsetY * 0.2}%`
+              : undefined,
+          backgroundSize:
+            activeSection?.imageDisplayMode === "background"
+              ? `${activeSection.imageScale * 100}%`
+              : undefined,
+        }}
+      />
       <div className="showcase-backdrop" aria-hidden="true" />
 
       {config.global.showNav ? (

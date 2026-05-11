@@ -10,4 +10,11 @@ describe("ShowcaseCanvas", () => {
     expect(screen.getByText("Neon Reverie")).toBeInTheDocument();
     expect(screen.getByText(/Open Editor/i)).toBeInTheDocument();
   });
+
+  it("renders the hero image as a background visual when display mode is background", () => {
+    const config = createDefaultSiteConfig();
+    render(<ShowcaseCanvas config={config} embedded />);
+
+    expect(screen.getByTestId("showcase-active-background")).toBeInTheDocument();
+  });
 });

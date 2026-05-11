@@ -18,12 +18,21 @@ export function useActiveSection(sectionIds: string[], rootRef?: RefObject<HTMLE
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const best = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+        if (visibleEntries.length === 0) {
+          return;
+        }
 
-        if (best?.target instanceof HTMLElement) {
-          setActiveId(best.target.dataset.sectionId ?? sectionIds[0]);
+        const best = visibleEntries.sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+        if (!(best?.target instanceof HTMLElement)) {
+          return;
+        }
+
+        const nextId = best.target.dataset.sectionId ?? sectionIds[0];
+        const shouldSwitch = best.intersectionRatio >= 0.55 || activeId === "";
+
+        if (shouldSwitch) {
+          setActiveId(nextId);
         }
       },
       {
@@ -34,7 +43,7 @@ export function useActiveSection(sectionIds: string[], rootRef?: RefObject<HTMLE
 
     nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  }, [rootRef, sectionIds]);
+  }, [activeId, rootRef, sectionIds]);
 
   return activeId;
 }
