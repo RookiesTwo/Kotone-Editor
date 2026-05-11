@@ -36,7 +36,7 @@ export function ShowcaseCanvas({ config, embedded = false }: { config: SiteConfi
   const visibleSections = config.sections.filter((section) => section.visible);
   const activeId = useActiveSection(
     visibleSections.map((section) => section.id),
-    embedded ? scrollerRef : undefined,
+    embedded ? undefined : scrollerRef,
   );
 
   const activeSection = visibleSections.find((section) => section.id === activeId) ?? visibleSections[0];
