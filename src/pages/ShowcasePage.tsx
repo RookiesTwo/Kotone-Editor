@@ -1,3 +1,7 @@
+import { ShowcaseCanvas } from "../components/ShowcaseCanvas";
+import { useSiteConfig } from "../context/SiteConfigContext";
+
 export function ShowcasePage() {
-  return <main>Showcase page pending renderer task.</main>;
+  const { config } = useSiteConfig();
+  return <ShowcaseCanvas config={config} />;
 }

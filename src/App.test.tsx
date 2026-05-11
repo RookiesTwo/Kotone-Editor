@@ -3,10 +3,9 @@ import { describe, expect, it } from "vitest";
 import App from "./App";
 
 describe("App", () => {
-  it("renders the ShowcasePage placeholder for the default hash route", () => {
+  it("renders the ShowcaseCanvas via the default hash route", () => {
     render(<App />);
-    expect(
-      screen.getByText(/Showcase page pending renderer task/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Neon Reverie")).toBeInTheDocument();
+    expect(screen.getByText("LUMINOUS ECHO")).toBeInTheDocument();
   });
 });
