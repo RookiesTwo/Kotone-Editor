@@ -37,4 +37,12 @@ describe("ShowcaseCanvas", () => {
     const background = screen.getByTestId("showcase-active-background");
     expect(background.className).toContain("showcase-active-background--page");
   });
+
+  it("renders both background slots and keeps the current background layer mounted", () => {
+    const config = createDefaultSiteConfig();
+    render(<ShowcaseCanvas config={config} />);
+
+    expect(screen.getByTestId("showcase-active-background")).toBeInTheDocument();
+    expect(screen.getByTestId("showcase-active-background-to")).toBeInTheDocument();
+  });
 });

@@ -15,10 +15,11 @@ export function ShowcaseCanvas({
 }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const visibleSections = config.sections.filter((section) => section.visible);
-  const { from, to, progress } = useActiveSection(visibleSections.map((s) => s.id));
-  const fromSection = visibleSections.find((s) => s.id === from) ?? visibleSections[0];
-  const toSection = visibleSections.find((s) => s.id === to) ?? visibleSections[0];
-  const activeSection = fromSection;
+  const state = useActiveSection(visibleSections.map((s) => s.id));
+  const fromSection = visibleSections.find((s) => s.id === state.from) ?? visibleSections[0];
+  const toSection = visibleSections.find((s) => s.id === state.to) ?? visibleSections[0];
+  const currentSection = visibleSections.find((s) => s.id === state.current) ?? visibleSections[0];
+  const activeSection = state.mode === "zone" ? currentSection : toSection;
 
   const [dragState, setDragState] = useState<{
     id: string;
@@ -118,17 +119,20 @@ export function ShowcaseCanvas({
     };
   }
 
-  const fromBg = backgroundFor(fromSection);
-  const toBg = backgroundFor(toSection);
+  const fromBackground = backgroundFor(fromSection);
+  const toBackground = backgroundFor(toSection);
   const fromBackdrop = backdropFor(fromSection);
   const toBackdrop = backdropFor(toSection);
+
+  const fromWeight = state.mode === "zone" ? 1 : 1 - state.progress;
+  const toWeight = state.mode === "zone" ? 0 : state.progress;
 
   return (
     <div
       ref={scrollerRef}
       className={`showcase-shell${embedded ? " showcase-shell--embedded" : ""}`}
       style={{
-        background: activeSection?.background ?? config.global.backgroundStart,
+        background: fromSection.background,
         ["--accent" as string]: activeSection?.backgroundAccent ?? config.global.accent,
         ["--accent-soft" as string]: config.global.accentSoft,
         ["--overlay-opacity" as string]: String(activeSection?.overlayOpacity ?? 0.24),
@@ -139,45 +143,25 @@ export function ShowcaseCanvas({
         aria-hidden="true"
         style={{
           background: toSection.background,
-          opacity: fromSection.id === toSection.id ? 0 : progress,
+          opacity: toWeight,
         }}
       />
-      <div
-        className="showcase-backdrop"
-        aria-hidden="true"
-        style={{
-          ...fromBackdrop,
-          opacity: fromSection.id === toSection.id ? 0.95 : 1 - progress,
-        }}
-      />
-      <div
-        className="showcase-backdrop"
-        aria-hidden="true"
-        style={{
-          ...toBackdrop,
-          opacity: fromSection.id === toSection.id ? 0 : progress,
-        }}
-      />
+      <div className="showcase-backdrop" aria-hidden="true" style={{ ...fromBackdrop, opacity: state.mode === "zone" ? 0.95 : fromWeight }} />
+      <div className="showcase-backdrop" aria-hidden="true" style={{ ...toBackdrop, opacity: state.mode === "zone" ? 0 : toWeight }} />
       <div
         data-testid="showcase-active-background"
-        className={`showcase-active-background ${
-          embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
-        }`}
-        key={from}
+        className={`showcase-active-background ${embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"}`}
         style={{
-          ...fromBg,
-          opacity: fromSection.id === toSection.id ? 1 : 1 - progress,
+          ...fromBackground,
+          opacity: state.mode === "zone" ? 1 : fromWeight,
         }}
       />
       <div
         data-testid="showcase-active-background-to"
-        className={`showcase-active-background ${
-          embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
-        }`}
-        key={`to-${to}`}
+        className={`showcase-active-background ${embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"}`}
         style={{
-          ...toBg,
-          opacity: fromSection.id === toSection.id ? 0 : progress,
+          ...toBackground,
+          opacity: state.mode === "zone" ? 0 : toWeight,
         }}
       />
 
@@ -195,21 +179,18 @@ export function ShowcaseCanvas({
       ) : null}
 
       <div className="showcase-sections">
-        {visibleSections.map((section, idx) => {
-          const fromIdx = visibleSections.findIndex((s) => s.id === from);
-          const isSingle = from === to && from === section.id;
-          const isFrom = from === section.id && !isSingle;
-          const isTo = to === section.id && !isSingle;
+        {visibleSections.map((section, _idx) => {
+          const isZoneCurrent = state.mode === "zone" && state.current === section.id;
+          const isGapFrom = state.mode === "gap" && state.from === section.id;
+          const isGapTo = state.mode === "gap" && state.to === section.id;
 
-          const sectionProgress = isSingle
+          const sectionProgress = isZoneCurrent
             ? 1
-            : isFrom
-              ? 1 - progress
-              : isTo
-                ? progress
-                : idx < fromIdx
-                  ? 0
-                  : 0;
+            : isGapFrom
+              ? 1 - state.progress
+              : isGapTo
+                ? state.progress
+                : 0;
 
           const sectionTranslateY = (1 - sectionProgress) * 24;
           const sectionScale = 0.94 + sectionProgress * 0.06;
