@@ -328,7 +328,12 @@ export function EditorPage() {
       </aside>
 
       <section className="editor-preview">
-        <ShowcaseCanvas config={config} embedded />
+        <ShowcaseCanvas
+          config={config}
+          embedded
+          editableSectionId={selectedSection?.id}
+          onImageOffsetChange={(id, imageOffsetX, imageOffsetY) => updateSection(id, { imageOffsetX, imageOffsetY })}
+        />
       </section>
     </main>
   );
