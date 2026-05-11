@@ -98,6 +98,14 @@ export function ShowcaseCanvas({
     );
   }
 
+  function backdropFor(section: SectionConfig) {
+    return {
+      background: `radial-gradient(circle at 20% 20%, color-mix(in srgb, ${section.backgroundAccent} 28%, transparent) 0%, transparent 30%),
+        radial-gradient(circle at 80% 15%, color-mix(in srgb, ${config.global.accentSoft} 22%, transparent) 0%, transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, ${section.overlayOpacity * 0.16}) 0%, transparent 38%)`,
+    };
+  }
+
   function backgroundFor(section: SectionConfig) {
     if (section.imageDisplayMode !== "background" || !section.image) {
       return {};
@@ -112,6 +120,8 @@ export function ShowcaseCanvas({
 
   const fromBg = backgroundFor(fromSection);
   const toBg = backgroundFor(toSection);
+  const fromBackdrop = backdropFor(fromSection);
+  const toBackdrop = backdropFor(toSection);
 
   return (
     <div
@@ -124,7 +134,22 @@ export function ShowcaseCanvas({
         ["--overlay-opacity" as string]: String(activeSection?.overlayOpacity ?? 0.24),
       }}
     >
-      <div className="showcase-backdrop" aria-hidden="true" />
+      <div
+        className="showcase-backdrop"
+        aria-hidden="true"
+        style={{
+          ...fromBackdrop,
+          opacity: fromSection.id === toSection.id ? 0.95 : 1 - progress,
+        }}
+      />
+      <div
+        className="showcase-backdrop"
+        aria-hidden="true"
+        style={{
+          ...toBackdrop,
+          opacity: fromSection.id === toSection.id ? 0 : progress,
+        }}
+      />
       <div
         data-testid="showcase-active-background"
         className={`showcase-active-background ${
