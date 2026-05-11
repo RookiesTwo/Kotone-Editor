@@ -160,7 +160,9 @@ export function ShowcaseCanvas({
       ) : null}
 
       <div className="showcase-sections">
-        {visibleSections.map((section) => {
+        {visibleSections.map((section, idx) => {
+          const fromIdx = visibleSections.findIndex((s) => s.id === from);
+          const toIdx = visibleSections.findIndex((s) => s.id === to);
           const isTransitioningIn = to === section.id && from !== section.id;
           const isTransitioningOut = from === section.id && to !== section.id;
           const isSingle = from === to && from === section.id;
@@ -171,7 +173,11 @@ export function ShowcaseCanvas({
               ? progress
               : isTransitioningOut
                 ? 1 - progress
-                : 1;
+                : fromIdx >= 0 && toIdx >= 0 && idx > toIdx
+                  ? 0
+                  : fromIdx >= 0 && idx < fromIdx
+                    ? 1
+                    : 1;
 
           const sectionTranslateY = (1 - sectionProgress) * 24;
           const sectionScale = 0.94 + sectionProgress * 0.06;
