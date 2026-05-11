@@ -111,6 +111,7 @@ export function ShowcaseCanvas({
         ["--overlay-opacity" as string]: String(activeSection?.overlayOpacity ?? 0.24),
       }}
     >
+      <div className="showcase-backdrop" aria-hidden="true" />
       <div
         data-testid="showcase-active-background"
         className="showcase-active-background"
@@ -129,7 +130,6 @@ export function ShowcaseCanvas({
               : undefined,
         }}
       />
-      <div className="showcase-backdrop" aria-hidden="true" />
 
       {config.global.showNav ? (
         <header className="showcase-nav">
