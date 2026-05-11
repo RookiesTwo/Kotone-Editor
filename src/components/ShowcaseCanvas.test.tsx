@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { createDefaultSiteConfig } from "../data/default-config";
+import "../index.css";
 import { ShowcaseCanvas } from "./ShowcaseCanvas";
 
 describe("ShowcaseCanvas", () => {
@@ -27,5 +28,13 @@ describe("ShowcaseCanvas", () => {
     const frame = document.querySelector(".section-image-frame") as HTMLElement;
     expect(frame).toBeTruthy();
     expect(frame.style.width).not.toBe("");
+  });
+
+  it("uses a viewport-fixed background layer on the public showcase route", () => {
+    const config = createDefaultSiteConfig();
+    render(<ShowcaseCanvas config={config} />);
+
+    const background = screen.getByTestId("showcase-active-background");
+    expect(background.className).toContain("showcase-active-background--page");
   });
 });

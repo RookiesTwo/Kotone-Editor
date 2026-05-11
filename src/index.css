@@ -331,14 +331,23 @@ textarea {
 }
 
 .showcase-active-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   opacity: 0.88;
   transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease, opacity 700ms ease;
+}
+
+.showcase-active-background--page {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.showcase-active-background--embedded {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .section-image-frame {

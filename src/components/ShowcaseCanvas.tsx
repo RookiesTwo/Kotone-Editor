@@ -111,7 +111,9 @@ export function ShowcaseCanvas({
       <div className="showcase-backdrop" aria-hidden="true" />
       <div
         data-testid="showcase-active-background"
-        className="showcase-active-background"
+        className={`showcase-active-background ${
+          embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
+        }`}
         style={{
           backgroundImage:
             activeSection?.imageDisplayMode === "background" && activeSection.image
