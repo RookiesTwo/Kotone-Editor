@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useActiveSection } from "../hooks/useActiveSection";
 import type { SectionConfig, SiteConfig } from "../types/site-config";
 
@@ -19,18 +19,6 @@ export function ShowcaseCanvas({
   const fromSection = visibleSections.find((s) => s.id === from) ?? visibleSections[0];
   const toSection = visibleSections.find((s) => s.id === to) ?? visibleSections[0];
   const activeSection = fromSection;
-
-  const prevFrom = useRef(from);
-  const [skipFade, setSkipFade] = useState(false);
-
-  useEffect(() => {
-    if (prevFrom.current !== from) {
-      prevFrom.current = from;
-      setSkipFade(true);
-      const id = requestAnimationFrame(() => setSkipFade(false));
-      return () => cancelAnimationFrame(id);
-    }
-  }, [from]);
 
   const [dragState, setDragState] = useState<{
     id: string;
@@ -174,7 +162,8 @@ export function ShowcaseCanvas({
         data-testid="showcase-active-background"
         className={`showcase-active-background ${
           embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
-        }${skipFade ? " showcase-active-background--no-fade" : ""}`}
+        }`}
+        key={from}
         style={{
           ...fromBg,
           opacity: fromSection.id === toSection.id ? 0.88 : 1 - progress,
@@ -184,7 +173,8 @@ export function ShowcaseCanvas({
         data-testid="showcase-active-background-to"
         className={`showcase-active-background ${
           embedded ? "showcase-active-background--embedded" : "showcase-active-background--page"
-        }${skipFade ? " showcase-active-background--no-fade" : ""}`}
+        }`}
+        key={`to-${to}`}
         style={{
           ...toBg,
           opacity: fromSection.id === toSection.id ? 0 : progress,
