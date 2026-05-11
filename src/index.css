@@ -97,7 +97,7 @@ textarea {
     linear-gradient(180deg, rgba(255, 255, 255, calc(var(--overlay-opacity) * 0.16)) 0%, transparent 38%);
   mix-blend-mode: screen;
   opacity: 0.95;
-  transition: transform 600ms ease;
+  transition: opacity 300ms ease, transform 600ms ease;
 }
 
 .showcase-shell--embedded .showcase-backdrop {
@@ -327,7 +327,11 @@ textarea {
   background-position: center;
   background-size: cover;
   opacity: 0.88;
-  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease;
+  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease, opacity 300ms ease;
+}
+
+.showcase-active-background--no-fade {
+  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease, opacity 0ms;
 }
 
 .showcase-shell-bg-to {
