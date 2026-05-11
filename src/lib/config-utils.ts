@@ -18,6 +18,7 @@ const motionPresets: MotionPreset[] = ["soft", "medium", "bold"];
 const alignModes: AlignMode[] = ["start", "center", "end"];
 const densityModes: DensityMode[] = ["compact", "full", "tall"];
 const transitionStyles: TransitionStyle[] = ["fade", "lift", "glow"];
+const imageDisplayModes: SectionConfig["imageDisplayMode"][] = ["inline", "background"];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -103,6 +104,12 @@ export function createSection(type: SectionType = "custom"): SectionConfig {
     buttonLabel: "",
     buttonHref: "",
     transitionStyle: "fade",
+    imageDisplayMode: type === "hero" ? "background" : "inline",
+    imageFrameWidth: 56,
+    imageFrameHeight: 72,
+    imageScale: 1,
+    imageOffsetX: 0,
+    imageOffsetY: 0,
   };
 }
 
@@ -133,6 +140,12 @@ function normalizeSection(value: unknown): SectionConfig {
     buttonLabel: pickString(value.buttonLabel, ""),
     buttonHref: pickString(value.buttonHref, ""),
     transitionStyle: pickEnum(value.transitionStyle, transitionStyles, fallback.transitionStyle),
+    imageDisplayMode: pickEnum(value.imageDisplayMode, imageDisplayModes, fallback.imageDisplayMode),
+    imageFrameWidth: Math.max(24, Math.min(100, pickNumber(value.imageFrameWidth, fallback.imageFrameWidth))),
+    imageFrameHeight: Math.max(24, Math.min(100, pickNumber(value.imageFrameHeight, fallback.imageFrameHeight))),
+    imageScale: Math.max(0.5, Math.min(2.5, pickNumber(value.imageScale, fallback.imageScale))),
+    imageOffsetX: Math.max(-100, Math.min(100, pickNumber(value.imageOffsetX, fallback.imageOffsetX))),
+    imageOffsetY: Math.max(-100, Math.min(100, pickNumber(value.imageOffsetY, fallback.imageOffsetY))),
   };
 }
 

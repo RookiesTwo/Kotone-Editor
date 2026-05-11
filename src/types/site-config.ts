@@ -50,6 +50,12 @@ export interface SectionConfig {
   buttonLabel: string;
   buttonHref: string;
   transitionStyle: TransitionStyle;
+  imageDisplayMode: "inline" | "background";
+  imageFrameWidth: number;
+  imageFrameHeight: number;
+  imageScale: number;
+  imageOffsetX: number;
+  imageOffsetY: number;
 }
 
 export interface SiteConfig {
