@@ -132,7 +132,7 @@ export function ShowcaseCanvas({
         }`}
         style={{
           ...fromBg,
-          opacity: fromSection.id === toSection.id ? 0.88 : 1 - progress,
+          opacity: fromSection.id === toSection.id ? 0.88 : Math.max(0, 1 - progress * 1.8),
         }}
       />
       <div
@@ -142,7 +142,7 @@ export function ShowcaseCanvas({
         }`}
         style={{
           ...toBg,
-          opacity: fromSection.id === toSection.id ? 0 : Math.max(0, Math.min(1, progress)),
+          opacity: fromSection.id === toSection.id ? 0 : Math.min(1, progress * 1.8),
         }}
       />
 
