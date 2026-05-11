@@ -24,4 +24,25 @@ describe("EditorPage localization", () => {
     expect(screen.getByText("Site title")).toBeInTheDocument();
     expect(screen.getAllByText("Neon Reverie").length).toBeGreaterThan(0);
   });
+
+  it("lets the user add and remove tags", () => {
+    render(
+      <EditorLocaleProvider>
+        <SiteConfigProvider>
+          <EditorPage />
+        </SiteConfigProvider>
+      </EditorLocaleProvider>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Add tag"), {
+      target: { value: "new-tag" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add tag" }));
+
+    expect(screen.getAllByText("new-tag").length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Delete" }).at(-1)!);
+
+    expect(screen.queryByText("new-tag")).not.toBeInTheDocument();
+  });
 });

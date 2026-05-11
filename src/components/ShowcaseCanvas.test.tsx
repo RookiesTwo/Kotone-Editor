@@ -17,4 +17,15 @@ describe("ShowcaseCanvas", () => {
 
     expect(screen.getByTestId("showcase-active-background")).toBeInTheDocument();
   });
+
+  it("renders inline image frames with composition sizing styles", () => {
+    const config = createDefaultSiteConfig();
+    config.sections[1].visible = true;
+
+    render(<ShowcaseCanvas config={config} embedded />);
+
+    const frame = document.querySelector(".section-image-frame") as HTMLElement;
+    expect(frame).toBeTruthy();
+    expect(frame.style.width).not.toBe("");
+  });
 });
