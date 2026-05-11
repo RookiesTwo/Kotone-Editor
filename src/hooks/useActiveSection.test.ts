@@ -7,7 +7,7 @@ describe("useActiveSection", () => {
     const { result } = renderHook(() => useActiveSection(["a", "b"]));
 
     expect(result.current.from).toBe("a");
-    expect(result.current.to).toBe("b");
+    expect(result.current.to).toBe("a");
     expect(result.current.progress).toBe(0);
   });
 

@@ -1,4 +1,14 @@
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
+
+const ZONE_PADDING = 0.15;
+
+interface SectionRect {
+  id: string;
+  top: number;
+  bottom: number;
+  zoneTop: number;
+  zoneBottom: number;
+}
 
 export function useActiveSection(
   sectionIds: string[],
@@ -14,12 +24,11 @@ export function useActiveSection(
     }
 
     const first = sectionIds[0];
-    return {
-      from: first,
-      to: sectionIds.length > 1 ? sectionIds[1] : first,
-      progress: 0,
-    };
+    return { from: first, to: first, progress: 0 };
   });
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
     if (sectionIds.length === 0) {
@@ -35,43 +44,71 @@ export function useActiveSection(
       return;
     }
 
-    const updateProgress = () => {
+    const computeState = () => {
       const viewportCenter = window.innerHeight / 2;
-      let bestFrom = sectionIds[0];
-      let bestTo = sectionIds[0];
-      let bestProgress = 0;
-
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
+      const rects: SectionRect[] = nodes.map((node) => {
         const rect = node.getBoundingClientRect();
-        const nodeCenter = rect.top + rect.height / 2;
-        const distance = Math.abs(nodeCenter - viewportCenter);
-        const maxDistance = window.innerHeight / 2 + rect.height / 2;
-        const proximity = Math.max(0, 1 - distance / maxDistance);
+        const centerY = rect.top + rect.height / 2;
+        return {
+          id: node.dataset.sectionId ?? "",
+          top: rect.top,
+          bottom: rect.bottom,
+          zoneTop: centerY - rect.height * ZONE_PADDING,
+          zoneBottom: centerY + rect.height * ZONE_PADDING,
+        };
+      });
 
-        if (proximity > bestProgress) {
-          bestProgress = proximity;
-          bestTo = node.dataset.sectionId ?? sectionIds[0];
-          bestFrom = i > 0
-            ? (nodes[i - 1].dataset.sectionId ?? sectionIds[0])
-            : (node.dataset.sectionId ?? sectionIds[0]);
+      // Find which visual-center zone contains the viewport center
+      for (const rect of rects) {
+        if (viewportCenter >= rect.zoneTop && viewportCenter <= rect.zoneBottom) {
+          if (stateRef.current.from !== rect.id || stateRef.current.to !== rect.id || stateRef.current.progress !== 0) {
+            setState({ from: rect.id, to: rect.id, progress: 0 });
+          }
+
+          return;
         }
       }
 
-      setState((prev) => {
-        const nextProgress = Math.max(0, Math.min(1, bestProgress));
-        if (prev.from === bestFrom && prev.to === bestTo && prev.progress === nextProgress) {
-          return prev;
+      // Find the gap: first section whose zoneTop is below viewport center (upper/entering),
+      // and the section immediately before it (lower/exiting)
+      let upper: SectionRect | null = null;
+      let lower: SectionRect | null = null;
+
+      for (let i = 0; i < rects.length; i++) {
+        if (rects[i].zoneTop > viewportCenter) {
+          upper = rects[i];
+          lower = i > 0 ? rects[i - 1] : null;
+          break;
+        }
+      }
+
+      if (upper && lower) {
+        const gapStart = lower.zoneBottom;
+        const gapEnd = upper.zoneTop;
+        const gapLength = gapEnd - gapStart;
+        const gapProgress = gapLength > 0
+          ? (viewportCenter - gapStart) / gapLength
+          : 0;
+        const clamped = Math.max(0, Math.min(1, gapProgress));
+
+        if (stateRef.current.from !== lower.id || stateRef.current.to !== upper.id || stateRef.current.progress !== clamped) {
+          setState({ from: lower.id, to: upper.id, progress: clamped });
         }
 
-        return { from: bestFrom, to: bestTo, progress: nextProgress };
-      });
+        return;
+      }
+
+      // Before first section's zone or after last section's zone
+      const firstId = rects[0]?.id ?? sectionIds[0];
+      if (stateRef.current.from !== firstId || stateRef.current.to !== firstId || stateRef.current.progress !== 0) {
+        setState({ from: firstId, to: firstId, progress: 0 });
+      }
     };
 
-    updateProgress();
+    computeState();
 
     if (typeof requestAnimationFrame === "function" && window.innerHeight > 0) {
-      const onScroll = () => requestAnimationFrame(updateProgress);
+      const onScroll = () => requestAnimationFrame(computeState);
       window.addEventListener("scroll", onScroll, { passive: true });
       return () => window.removeEventListener("scroll", onScroll);
     }

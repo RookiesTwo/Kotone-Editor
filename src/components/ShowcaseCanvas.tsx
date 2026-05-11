@@ -132,7 +132,7 @@ export function ShowcaseCanvas({
         }`}
         style={{
           ...fromBg,
-          opacity: fromSection.id === toSection.id ? 0.88 : Math.max(0, 1 - progress * 1.8),
+          opacity: fromSection.id === toSection.id ? 0.88 : 1 - progress,
         }}
       />
       <div
@@ -142,7 +142,7 @@ export function ShowcaseCanvas({
         }`}
         style={{
           ...toBg,
-          opacity: fromSection.id === toSection.id ? 0 : Math.min(1, progress * 1.8),
+          opacity: fromSection.id === toSection.id ? 0 : progress,
         }}
       />
 
@@ -162,22 +162,19 @@ export function ShowcaseCanvas({
       <div className="showcase-sections">
         {visibleSections.map((section, idx) => {
           const fromIdx = visibleSections.findIndex((s) => s.id === from);
-          const toIdx = visibleSections.findIndex((s) => s.id === to);
-          const isTransitioningIn = to === section.id && from !== section.id;
-          const isTransitioningOut = from === section.id && to !== section.id;
           const isSingle = from === to && from === section.id;
+          const isFrom = from === section.id && !isSingle;
+          const isTo = to === section.id && !isSingle;
 
           const sectionProgress = isSingle
             ? 1
-            : isTransitioningIn
-              ? progress
-              : isTransitioningOut
-                ? 1 - progress
-                : fromIdx >= 0 && toIdx >= 0 && idx > toIdx
+            : isFrom
+              ? 1 - progress
+              : isTo
+                ? progress
+                : idx < fromIdx
                   ? 0
-                  : fromIdx >= 0 && idx < fromIdx
-                    ? 1
-                    : 1;
+                  : 0;
 
           const sectionTranslateY = (1 - sectionProgress) * 24;
           const sectionScale = 0.94 + sectionProgress * 0.06;
