@@ -327,7 +327,7 @@ textarea {
   background-position: center;
   background-size: cover;
   opacity: 0.88;
-  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease, opacity 700ms ease;
+  transition: background-image 700ms ease, background-position 700ms ease, background-size 700ms ease;
 }
 
 .showcase-active-background--page {
