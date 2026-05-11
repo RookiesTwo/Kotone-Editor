@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: process.env.NODE_ENV === "production" ? "/Website-FullAIwork/" : "/",
+  base: process.env.NODE_ENV === "production" ? "/Kotone-Editor/" : "/",
   test: {
     environment: "jsdom",
     globals: true,
